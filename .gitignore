@@ -1,0 +1,8 @@
+# Root-level ignores for secrets and OS files
+.env
+*.env
+!.env.example
+*.local
+*.pem
+.DS_Store
+Thumbs.db
