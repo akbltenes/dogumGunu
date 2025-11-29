@@ -140,8 +140,6 @@ public class SecurityConfig {
             context.setSessionCookieName("JSESSIONID");
             context.setSessionCookiePath("/");
             context.setUseHttpOnly(true);
-            context.setSessionCookieSecure(true);
-            context.setSessionCookieSameSite("None");
         });
     }
 }
