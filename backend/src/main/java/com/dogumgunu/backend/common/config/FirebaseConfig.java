@@ -6,9 +6,10 @@ import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Configuration
@@ -18,17 +19,20 @@ public class FirebaseConfig {
     public void initialize() {
         try {
             if (FirebaseApp.getApps().isEmpty()) {
-                GoogleCredentials credentials = GoogleCredentials.fromStream(
-                        new ClassPathResource("FIREBASE_SERVICE_ACCOUNT").getInputStream()
-                );
+                String serviceAccountPath = System.getenv("FIREBASE_SERVICE_ACCOUNT_PATH");
+                if (serviceAccountPath == null || serviceAccountPath.isBlank()) {
+                    throw new IllegalStateException("FIREBASE_SERVICE_ACCOUNT_PATH env variable is not set");
+                }
 
-                FirebaseOptions options = FirebaseOptions.builder()
-                        .setCredentials(credentials)
-                        .setStorageBucket("dogumgunu-3ed67.firebasestorage.app")
-                        .build();
+                try (FileInputStream serviceAccount = new FileInputStream(serviceAccountPath)) {
+                    FirebaseOptions options = FirebaseOptions.builder()
+                            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                            .setStorageBucket("dogumgunu-3ed67.appspot.com")
+                            .build();
 
-                FirebaseApp.initializeApp(options);
-                log.info("Firebase initialized successfully");
+                    FirebaseApp.initializeApp(options);
+                    log.info("Firebase initialized successfully");
+                }
             }
         } catch (IOException e) {
             log.error("Failed to initialize Firebase", e);
