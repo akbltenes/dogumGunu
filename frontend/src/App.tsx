@@ -12,15 +12,15 @@ const QuizPage = lazy(() => import('./pages/QuizPage.tsx'))
 const DreamsPage = lazy(() => import('./pages/DreamsPage.tsx'))
 
 const pageVariants = {
-  initial: { opacity: 0, y: 20 },
-  in: { opacity: 1, y: 0 },
-  out: { opacity: 0, y: -20 }
+  initial: { opacity: 0, scale: 0.95, y: 50 },
+  in: { opacity: 1, scale: 1, y: 0 },
+  out: { opacity: 0, scale: 0.95, y: -50 }
 }
 
 const pageTransition = {
   type: 'tween',
-  ease: 'anticipate',
-  duration: 0.5
+  ease: [0.43, 0.13, 0.23, 0.96], // Cubic bezier ease
+  duration: 1.2
 }
 
 const AnimatedPage = ({ children }: { children: React.ReactNode }) => (
