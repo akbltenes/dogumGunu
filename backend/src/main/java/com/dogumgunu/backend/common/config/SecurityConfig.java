@@ -73,7 +73,11 @@ public class SecurityConfig {
                         .maxSessionsPreventsLogin(false)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/timeline/**").permitAll()
+                        .requestMatchers("/api/plans/**").permitAll()
+                        .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .httpBasic(basic -> basic.disable())
                 .formLogin(form -> form.disable())
