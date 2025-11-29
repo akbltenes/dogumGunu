@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,7 +22,6 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import com.dogumgunu.backend.security.JwtAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -36,18 +34,17 @@ public class SecurityConfig {
     private final String user1Username;
     private final String user1PasswordHash;
     private final String user2Username;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final String user2PasswordHash;
 
     public SecurityConfig(
             @Value("${app.security.user1.username}") String user1Username,
             @Value("${app.security.user1.password-hash}") String user1PasswordHash,
             @Value("${app.security.user2.username}") String user2Username,
-            @Value("${app.security.user2.password-hash}") String user2PasswordHash,
-            JwtAuthenticationFilter jwtAuthenticationFilter) {
+            @Value("${app.security.user2.password-hash}") String user2PasswordHash) {
         this.user1Username = user1Username;
         this.user1PasswordHash = user1PasswordHash;
         this.user2Username = user2Username;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.user2PasswordHash = user2PasswordHash;
     }
 
     @Bean
@@ -76,7 +73,11 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS)
+                        .sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED)
+                        .sessionFixation().migrateSession()
+                        .maximumSessions(2)
+                        .maxSessionsPreventsLogin(false)
+                        .sessionRegistry(sessionRegistry())
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login").permitAll()
@@ -86,7 +87,6 @@ public class SecurityConfig {
                 .httpBasic(basic -> basic.disable())
                 .formLogin(form -> form.disable())
                 .logout(logout -> logout.permitAll())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(401);

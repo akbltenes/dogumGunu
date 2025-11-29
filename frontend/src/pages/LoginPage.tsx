@@ -91,11 +91,6 @@ const LoginPage = () => {
         throw new Error(message)
       }
 
-      // Save JWT token
-      if (data?.token) {
-        localStorage.setItem('jwt-token', data.token)
-      }
-
       if (rememberMe) {
         localStorage.setItem('birthday-app-user', username)
       } else {

@@ -21,12 +21,10 @@ const NavigationTabs = ({ currentPage, className = '' }: NavigationTabsProps) =>
         method: 'POST',
       })
       localStorage.removeItem('birthday-app-user')
-      localStorage.removeItem('jwt-token')
       navigate('/login', { replace: true })
     } catch (error) {
       console.error('Logout hatası:', error)
       localStorage.removeItem('birthday-app-user')
-      localStorage.removeItem('jwt-token')
       navigate('/login', { replace: true })
     }
   }
