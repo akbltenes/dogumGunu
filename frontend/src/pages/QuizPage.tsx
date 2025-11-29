@@ -1,11 +1,7 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import type { Status } from '../types/status'
-import LoadingSpinner from '../components/LoadingSpinner'
-import ErrorMessage from '../components/ErrorMessage'
 import NavigationTabs from '../components/NavigationTabs'
-import Button from '../components/Button'
 import { apiFetch } from '../utils/api'
 
 interface QuizQuestion {
