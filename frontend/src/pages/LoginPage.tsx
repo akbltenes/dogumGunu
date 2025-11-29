@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import type { Status } from '../types/status'
+import { apiFetch } from '../utils/api'
 
 const LoginPage = () => {
   const [username, setUsername] = useState('')
@@ -75,12 +76,11 @@ const LoginPage = () => {
       setIsSubmitting(true)
       setStatus({ type: 'idle', message: '' })
 
-      const response = await fetch('/api/auth/login', {
+      const response = await apiFetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
         body: JSON.stringify({ username, password }),
       })
 
