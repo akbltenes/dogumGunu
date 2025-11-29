@@ -21,8 +21,16 @@ export const apiFetch = (path: string, options: RequestInit = {}) => {
   const base = getBaseUrl()
   const url = base ? `${base}${normalizedPath}` : normalizedPath
 
+  // Get JWT token from localStorage
+  const token = localStorage.getItem('jwt-token')
+  
   const mergedOptions: RequestInit = {
     credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...options.headers,
+    },
     ...options,
   }
 

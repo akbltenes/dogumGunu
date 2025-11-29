@@ -3,6 +3,7 @@ package com.dogumgunu.backend.controller;
 import com.dogumgunu.backend.dto.AuthRequestDto;
 import com.dogumgunu.backend.dto.AuthResponseDto;
 import com.dogumgunu.backend.service.AuthService;
+import com.dogumgunu.backend.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -27,6 +28,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final SecurityContextRepository securityContextRepository;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
@@ -34,6 +36,10 @@ public class AuthController {
                                   HttpServletRequest request, 
                                   HttpServletResponse response) {
         AuthResponseDto result = authService.login(requestDto);
+        
+        // Generate JWT token
+        String token = jwtUtil.generateToken(requestDto.getUsername());
+        result.setToken(token);
         
         SecurityContext context = SecurityContextHolder.getContext();
         securityContextRepository.saveContext(context, request, response);
