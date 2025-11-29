@@ -4,9 +4,16 @@ const normalizeBaseUrl = (url?: string) => {
 }
 
 const getBaseUrl = () => {
-  const envUrl = normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL)
+  let envUrl = import.meta.env.VITE_API_BASE_URL
+  
+  // Fix for Vercel env variable issue
+  if (envUrl && envUrl.includes('VITE_API_BASE_URL=')) {
+    envUrl = envUrl.replace('VITE_API_BASE_URL=', '')
+  }
+  
+  envUrl = normalizeBaseUrl(envUrl)
   console.log('Environment VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL)
-  console.log('Normalized base URL:', envUrl)
+  console.log('Fixed base URL:', envUrl)
   
   if (envUrl) {
     return envUrl
