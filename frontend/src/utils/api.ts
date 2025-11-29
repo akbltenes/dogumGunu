@@ -5,6 +5,9 @@ const normalizeBaseUrl = (url?: string) => {
 
 const getBaseUrl = () => {
   const envUrl = normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL)
+  console.log('Environment VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL)
+  console.log('Normalized base URL:', envUrl)
+  
   if (envUrl) {
     return envUrl
   }
@@ -20,6 +23,8 @@ export const apiFetch = (path: string, options: RequestInit = {}) => {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
   const base = getBaseUrl()
   const url = base ? `${base}${normalizedPath}` : normalizedPath
+
+  console.log('Final API URL:', url)
 
   const mergedOptions: RequestInit = {
     credentials: 'include',
