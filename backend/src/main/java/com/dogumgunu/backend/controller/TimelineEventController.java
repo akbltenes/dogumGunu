@@ -74,9 +74,7 @@ public class TimelineEventController {
             @RequestParam(value = "interactionType", defaultValue = "NONE") String interactionType,
             @RequestParam(value = "interactionPayload", required = false) String interactionPayloadJson) {
 
-        // Temporarily disable Firebase upload for testing
-        String mediaUrl = "https://via.placeholder.com/400x300.png?text=" + title.replace(" ", "+");
-        // String mediaUrl = firebaseStorageService.uploadFile(file, "timeline");
+        String mediaUrl = firebaseStorageService.uploadFile(file, "timeline");
 
         com.fasterxml.jackson.databind.JsonNode interactionPayload = null;
         if (interactionPayloadJson != null && !interactionPayloadJson.isEmpty()) {

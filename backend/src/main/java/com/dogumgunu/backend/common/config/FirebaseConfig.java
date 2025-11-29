@@ -27,7 +27,7 @@ public class FirebaseConfig {
                 try (FileInputStream serviceAccount = new FileInputStream(serviceAccountPath)) {
                     FirebaseOptions options = FirebaseOptions.builder()
                             .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                            .setStorageBucket("dogumgunu-3ed67.appspot.com")
+                            .setStorageBucket("dogumgunu-3ed67.firebasestorage.app")
                             .build();
 
                     FirebaseApp.initializeApp(options);
