@@ -3,12 +3,23 @@ const normalizeBaseUrl = (url?: string) => {
   return url.endsWith('/') ? url.slice(0, -1) : url
 }
 
-const API_BASE_URL = normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL)
+const getBaseUrl = () => {
+  const envUrl = normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL)
+  if (envUrl) {
+    return envUrl
+  }
+
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return normalizeBaseUrl(window.location.origin)
+  }
+
+  return ''
+}
 
 export const apiFetch = (path: string, options: RequestInit = {}) => {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
-  const base = API_BASE_URL || ''
-  const url = `${base}${normalizedPath}`
+  const base = getBaseUrl()
+  const url = base ? `${base}${normalizedPath}` : normalizedPath
 
   const mergedOptions: RequestInit = {
     credentials: 'include',
