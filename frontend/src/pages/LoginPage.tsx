@@ -8,10 +8,23 @@ const LoginPage = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
-  const [status, setStatus] = useState<Status>({ type: 'idle', message: '' })
+  const handleLogout = async () => {
+    try {
+      await apiFetch('/api/auth/logout', {
+        method: 'POST',
+      })
+      localStorage.removeItem('birthday-app-user')
+      navigate('/login', { replace: true })
+    } catch (error) {
+      console.error('Logout hatası:', error)
+      localStorage.removeItem('birthday-app-user')
+      navigate('/login', { replace: true })
+    }
+  }
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isFlipped, setIsFlipped] = useState(false)
   const navigate = useNavigate()
+  const [status, setStatus] = useState<Status>({ type: 'idle', message: '' })
 
   const risingHearts = useMemo(
     () =>
@@ -258,10 +271,15 @@ const LoginPage = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }}
-              className="mt-8 flex items-center justify-center gap-2 text-[#b36a7b]"
+              className="mt-8 flex flex-col items-center justify-center gap-2 text-[#b36a7b]"
             >
               <span className="text-sm">Giriş yapmak için tıkla</span>
-            
+              <button
+                onClick={handleLogout}
+                className="text-xs text-[#b36a7b]/60 hover:text-[#b36a7b] transition-colors"
+              >
+                Eski hesabı temizle
+              </button>
             </motion.div>
           </motion.div>
 
