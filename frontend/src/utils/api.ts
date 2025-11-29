@@ -26,6 +26,5 @@ export const apiFetch = (path: string, options: RequestInit = {}) => {
     ...options,
   }
 
-  console.log(`API Fetch: ${url}`, mergedOptions)
   return fetch(url, mergedOptions)
 }

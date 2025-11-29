@@ -86,11 +86,6 @@ const LoginPage = () => {
 
       const data = await response.json().catch(() => ({}))
 
-      console.log('Login response status:', response.status)
-      console.log('Login response headers:', response.headers)
-      console.log('Set-Cookie header:', response.headers.get('Set-Cookie'))
-      console.log('Login response data:', data)
-
       if (!response.ok) {
         const message = data?.message ?? 'Giriş başarısız. Lütfen bilgileri kontrol et.'
         throw new Error(message)

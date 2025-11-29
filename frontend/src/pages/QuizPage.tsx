@@ -69,19 +69,12 @@ const QuizPage = () => {
 
   const fetchUsername = async () => {
     try {
-      console.log('Fetching username from /api/auth/me')
       const response = await apiFetch('/api/auth/me')
-
-      console.log('Response status:', response.status)
-      console.log('Response headers:', response.headers)
 
       if (response.ok) {
         const name = await response.text()
-        console.log('Username received:', name)
         setUsername(name)
         return name
-      } else {
-        console.log('Response not ok:', response.status, response.statusText)
       }
     } catch (error) {
       console.error('Kullanıcı bilgisi alınamadı:', error)
@@ -147,23 +140,18 @@ const QuizPage = () => {
   }, [])
 
   const handleStart = async () => {
-    console.log('handleStart called, username:', username)
     if (!username) {
-      console.log('No username, fetching...')
       const fetchedUsername = await fetchUsername()
       if (!fetchedUsername) {
-        console.log('Failed to fetch username, returning')
         return
       }
     }
 
     const hasQuestions = await fetchQuestions()
     if (!hasQuestions) {
-      console.log('Failed to fetch questions, returning')
       return
     }
 
-    console.log('Starting quiz')
     setQuizState('playing')
     setCurrentQuestionIndex(0)
     setScore(0)

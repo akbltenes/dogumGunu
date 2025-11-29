@@ -30,6 +30,11 @@ const TimelinePage = () => {
       setIsLoading(true)
       const response = await apiFetch('/api/timeline')
 
+      if (response.status === 401) {
+        console.log('Not authenticated for timeline, redirecting to login')
+        navigate('/login', { replace: true })
+        return
+      }
 
       if (!response.ok) {
         throw new Error('Timeline yüklenemedi')
@@ -40,7 +45,6 @@ const TimelinePage = () => {
       const sorted = data.sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime())
       setEvents(sorted)
     } catch (err) {
-      console.error('Timeline fetch error:', err)
       setError(err instanceof Error ? err.message : 'Bir hata oluştu')
     } finally {
       setIsLoading(false)

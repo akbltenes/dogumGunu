@@ -90,6 +90,11 @@ const DreamsPage = () => {
       setIsLoading(true)
       const response = await apiFetch('/api/plans')
 
+      if (response.status === 401) {
+        console.log('Not authenticated for dreams, redirecting to login')
+        navigate('/login', { replace: true })
+        return
+      }
 
       if (response.ok) {
         const data = await response.json()
