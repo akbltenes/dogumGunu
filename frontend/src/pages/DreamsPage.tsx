@@ -182,7 +182,10 @@ const DreamsPage = () => {
       setShowAddForm(false)
     } catch (error) {
       console.error('Form gönderme hatası:', error)
-      alert('Bir hata oluştu: ' + error)
+      const message = error instanceof Error ? error.message : 'Bir hata oluştu: ' + error
+      alert('Bir hata oluştu: ' + message)
+    } finally {
+      // Cleanup if needed
     }
   }
 

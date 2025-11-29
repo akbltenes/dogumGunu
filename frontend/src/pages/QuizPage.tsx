@@ -141,18 +141,23 @@ const QuizPage = () => {
   }, [])
 
   const handleStart = async () => {
+    console.log('handleStart called, username:', username)
     if (!username) {
+      console.log('No username, fetching...')
       const fetchedUsername = await fetchUsername()
       if (!fetchedUsername) {
+        console.log('Failed to fetch username, returning')
         return
       }
     }
 
     const hasQuestions = await fetchQuestions()
     if (!hasQuestions) {
+      console.log('Failed to fetch questions, returning')
       return
     }
 
+    console.log('Starting quiz')
     setQuizState('playing')
     setCurrentQuestionIndex(0)
     setScore(0)

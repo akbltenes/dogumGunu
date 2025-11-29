@@ -40,6 +40,7 @@ const TimelinePage = () => {
       const sorted = data.sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime())
       setEvents(sorted)
     } catch (err) {
+      console.error('Timeline fetch error:', err)
       setError(err instanceof Error ? err.message : 'Bir hata oluştu')
     } finally {
       setIsLoading(false)
