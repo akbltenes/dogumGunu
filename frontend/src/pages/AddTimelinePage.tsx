@@ -2,6 +2,7 @@ import { type FormEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Status } from '../types/status'
 import FileUploadInput from '../components/FileUploadInput'
+import { apiFetch } from '../utils/api'
 
 const navItems = [
   { path: '/timeline', label: 'Timeline', icon: '📅' },
@@ -81,9 +82,8 @@ const AddTimelinePage = () => {
         }))
       }
 
-      const response = await fetch('/api/timeline/upload', {
+      const response = await apiFetch('/api/timeline/upload', {
         method: 'POST',
-        credentials: 'include',
         body: formData,
       })
 

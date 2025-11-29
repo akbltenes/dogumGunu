@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import NavigationTabs from '../components/NavigationTabs'
 import Modal from '../components/Modal'
 import Button from '../components/Button'
+import { apiFetch } from '../utils/api'
 
 type PlanStatus = 'PLANNED' | 'IN_PROGRESS' | 'DONE'
 
@@ -87,9 +88,7 @@ const DreamsPage = () => {
   const fetchPlans = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/plans', {
-        credentials: 'include',
-      })
+      const response = await apiFetch('/api/plans')
 
       if (response.status === 401) {
         navigate('/login', { replace: true })
@@ -149,9 +148,8 @@ const DreamsPage = () => {
     try {
       if (editingPlan) {
         // Update
-        const response = await fetch(`/api/plans/${editingPlan.id}`, {
+        const response = await apiFetch(`/api/plans/${editingPlan.id}`, {
           method: 'PUT',
-          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...payload, id: editingPlan.id }),
         })
@@ -167,9 +165,8 @@ const DreamsPage = () => {
         setPlans(plans.map((p) => (p.id === editingPlan.id ? updated : p)))
       } else {
         // Create
-        const response = await fetch('/api/plans', {
+        const response = await apiFetch('/api/plans', {
           method: 'POST',
-          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         })
@@ -201,9 +198,8 @@ const DreamsPage = () => {
     if (!deletingPlan) return
 
     try {
-      const response = await fetch(`/api/plans/${deletingPlan.id}`, {
+      const response = await apiFetch(`/api/plans/${deletingPlan.id}`, {
         method: 'DELETE',
-        credentials: 'include',
       })
 
       if (response.ok) {
@@ -222,9 +218,8 @@ const DreamsPage = () => {
 
   const handleStatusChange = async (plan: DreamPlan, newStatus: PlanStatus) => {
     try {
-      const response = await fetch(`/api/plans/${plan.id}`, {
+      const response = await apiFetch(`/api/plans/${plan.id}`, {
         method: 'PUT',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...plan, status: newStatus }),
       })

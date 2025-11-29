@@ -1,7 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import type { Status } from '../types/status'
+import LoadingSpinner from '../components/LoadingSpinner'
+import ErrorMessage from '../components/ErrorMessage'
 import NavigationTabs from '../components/NavigationTabs'
+import Button from '../components/Button'
+import { apiFetch } from '../utils/api'
 
 interface QuizQuestion {
   id: string
@@ -68,9 +73,7 @@ const QuizPage = () => {
 
   const fetchUsername = async () => {
     try {
-      const response = await fetch('/api/auth/me', {
-        credentials: 'include',
-      })
+      const response = await apiFetch('/api/auth/me')
 
       if (response.status === 401) {
         navigate('/login', { replace: true })
@@ -90,9 +93,7 @@ const QuizPage = () => {
 
   const fetchPreviousResults = async (user: string) => {
     try {
-      const response = await fetch(`/api/quiz/results?username=${encodeURIComponent(user)}`, {
-        credentials: 'include',
-      })
+      const response = await apiFetch(`/api/quiz/results?username=${encodeURIComponent(user)}`)
 
       if (response.ok) {
         const data = await response.json()
@@ -107,9 +108,7 @@ const QuizPage = () => {
     try {
       setQuestionError(null)
       setIsLoadingQuestions(true)
-      const response = await fetch('/api/quiz/questions/random?count=5', {
-        credentials: 'include',
-      })
+      const response = await apiFetch('/api/quiz/questions/random?count=5')
 
       if (response.status === 401) {
         navigate('/login', { replace: true })
@@ -208,9 +207,8 @@ const QuizPage = () => {
     }
 
     try {
-      await fetch('/api/quiz/results', {
+      await apiFetch('/api/quiz/results', {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username,

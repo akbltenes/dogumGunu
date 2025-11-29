@@ -7,10 +7,11 @@ import TimelineEventCard from '../components/TimelineEventCard'
 import TimelineEventModal from '../components/TimelineEventModal'
 import ConfirmDialog from '../components/ConfirmDialog'
 import NavigationTabs from '../components/NavigationTabs'
+import { apiFetch } from '../utils/api'
 
 const interactionBadges = {
   NONE: { label: '', color: '' },
-  QUIZ: { label: '🧠 Quiz', color: 'bg-primary/10 text-primary' },
+  QUIZ: { label: '', color: 'bg-primary/10 text-primary' },
   PHOTO_GUESS: { label: '🎯 Tahmin', color: 'bg-emerald-100 text-emerald-700' },
 }
 
@@ -27,9 +28,7 @@ const TimelinePage = () => {
   const fetchTimeline = useCallback(async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/timeline', {
-        credentials: 'include',
-      })
+      const response = await apiFetch('/api/timeline')
 
       if (response.status === 401) {
         // Unauthorized - redirect to login
@@ -67,9 +66,8 @@ const TimelinePage = () => {
       setDeletingId(eventToDelete.id)
       setConfirmDeleteOpen(false)
       
-      const response = await fetch(`/api/timeline/${eventToDelete.id}`, {
+      const response = await apiFetch(`/api/timeline/${eventToDelete.id}`, {
         method: 'DELETE',
-        credentials: 'include',
       })
 
       if (response.status === 401) {
