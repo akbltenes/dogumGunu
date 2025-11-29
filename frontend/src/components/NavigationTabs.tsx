@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { apiFetch } from '../utils/api'
 
 interface NavigationTabsProps {
   currentPage: 'timeline' | 'quiz' | 'dreams'
@@ -13,6 +14,20 @@ const navItems = [
 
 const NavigationTabs = ({ currentPage, className = '' }: NavigationTabsProps) => {
   const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    try {
+      await apiFetch('/api/auth/logout', {
+        method: 'POST',
+      })
+      localStorage.removeItem('birthday-app-user')
+      navigate('/login', { replace: true })
+    } catch (error) {
+      console.error('Logout hatası:', error)
+      localStorage.removeItem('birthday-app-user')
+      navigate('/login', { replace: true })
+    }
+  }
 
   const containerClasses = [
     'flex flex-wrap items-center justify-center gap-6 border-b border-rose-100/70 pb-3 text-sm font-semibold text-[#89616b] dark:border-white/10 dark:text-gray-200',
@@ -42,6 +57,14 @@ const NavigationTabs = ({ currentPage, className = '' }: NavigationTabsProps) =>
           </button>
         )
       })}
+      
+      <button
+        onClick={handleLogout}
+        className="inline-flex items-center gap-2 border-b-2 border-transparent px-2 py-1 text-[#89616b] hover:text-primary transition dark:text-gray-100 dark:hover:text-rose-200"
+      >
+        <span>🚪</span>
+        Çıkış Yap
+      </button>
     </nav>
   )
 }
