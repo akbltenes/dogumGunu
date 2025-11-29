@@ -87,10 +87,6 @@ const AddTimelinePage = () => {
         body: formData,
       })
 
-      if (response.status === 401) {
-        navigate('/login', { replace: true })
-        return
-      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))

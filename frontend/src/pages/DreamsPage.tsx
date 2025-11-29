@@ -90,10 +90,6 @@ const DreamsPage = () => {
       setIsLoading(true)
       const response = await apiFetch('/api/plans')
 
-      if (response.status === 401) {
-        navigate('/login', { replace: true })
-        return
-      }
 
       if (response.ok) {
         const data = await response.json()

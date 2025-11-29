@@ -30,11 +30,6 @@ const TimelinePage = () => {
       setIsLoading(true)
       const response = await apiFetch('/api/timeline')
 
-      if (response.status === 401) {
-        // Unauthorized - redirect to login
-        navigate('/login', { replace: true })
-        return
-      }
 
       if (!response.ok) {
         throw new Error('Timeline yüklenemedi')
@@ -70,10 +65,6 @@ const TimelinePage = () => {
         method: 'DELETE',
       })
 
-      if (response.status === 401) {
-        navigate('/login', { replace: true })
-        return
-      }
 
       if (!response.ok) {
         throw new Error('Anı silinemedi. Lütfen tekrar dene.')

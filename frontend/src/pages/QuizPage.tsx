@@ -71,10 +71,6 @@ const QuizPage = () => {
     try {
       const response = await apiFetch('/api/auth/me')
 
-      if (response.status === 401) {
-        navigate('/login', { replace: true })
-        return
-      }
 
       if (response.ok) {
         const name = await response.text()
@@ -106,10 +102,6 @@ const QuizPage = () => {
       setIsLoadingQuestions(true)
       const response = await apiFetch('/api/quiz/questions/random?count=5')
 
-      if (response.status === 401) {
-        navigate('/login', { replace: true })
-        return
-      }
 
       if (!response.ok) {
         throw new Error('Sorular yüklenemedi')
