@@ -11,6 +11,7 @@ import com.dogumgunu.backend.repository.QuizQuestionRepository;
 import com.dogumgunu.backend.repository.QuizResultRepository;
 import com.dogumgunu.backend.service.QuizService;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +83,20 @@ public class QuizServiceImpl implements QuizService {
         return resultRepository.findAllByUsernameOrderByCompletedAtDesc(username)
                 .stream()
                 .map(resultMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<QuizQuestionDto> getRandomQuestions(int count, QuizDifficulty difficulty) {
+        List<QuizQuestionEntity> allQuestions = (difficulty != null)
+                ? questionRepository.findAllByDifficultyOrderByCreatedAtAsc(difficulty)
+                : questionRepository.findAll();
+
+        Collections.shuffle(allQuestions);
+
+        return allQuestions.stream()
+                .limit(count)
+                .map(questionMapper::toDto)
                 .toList();
     }
 

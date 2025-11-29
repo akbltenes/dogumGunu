@@ -34,6 +34,14 @@ public class QuizController {
         return quizService.listQuestionsByDifficulty(difficulty);
     }
 
+    @GetMapping("/questions/random")
+    public List<QuizQuestionDto> getRandomQuestions(
+            @RequestParam(defaultValue = "5") int count,
+            @RequestParam(required = false) QuizDifficulty difficulty
+    ) {
+        return quizService.getRandomQuestions(count, difficulty);
+    }
+
     @GetMapping("/questions/{id}")
     public QuizQuestionDto getQuestion(@PathVariable UUID id) {
         return quizService.getQuestion(id);

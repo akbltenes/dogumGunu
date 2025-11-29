@@ -4,6 +4,7 @@ import com.dogumgunu.backend.dto.TimelineEventDto;
 import com.dogumgunu.backend.mapper.TimelineEventMapper;
 import com.dogumgunu.backend.model.TimelineEventEntity;
 import com.dogumgunu.backend.repository.TimelineEventRepository;
+import com.dogumgunu.backend.service.FirebaseStorageService;
 import com.dogumgunu.backend.service.TimelineEventService;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ public class TimelineEventServiceImpl implements TimelineEventService {
 
     private final TimelineEventRepository repository;
     private final TimelineEventMapper mapper;
+    private final FirebaseStorageService firebaseStorageService;
 
     @Override
     public List<TimelineEventDto> listAll() {
@@ -62,6 +64,7 @@ public class TimelineEventServiceImpl implements TimelineEventService {
     public void delete(UUID id) {
         TimelineEventEntity entity = findEntity(id);
         repository.delete(entity);
+        firebaseStorageService.deleteFile(entity.getMediaUrl());
     }
 
     private TimelineEventEntity findEntity(UUID id) {

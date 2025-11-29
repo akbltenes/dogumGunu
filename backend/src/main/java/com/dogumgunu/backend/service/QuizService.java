@@ -23,4 +23,6 @@ public interface QuizService {
     QuizResultDto recordResult(QuizResultDto dto);
 
     List<QuizResultDto> listResultsForUser(String username);
+
+    List<QuizQuestionDto> getRandomQuestions(int count, QuizDifficulty difficulty);
 }

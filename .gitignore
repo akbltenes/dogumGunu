@@ -6,3 +6,23 @@
 *.pem
 .DS_Store
 Thumbs.db
+
+# Frontend environment overrides
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# Backend Spring profile configs (keep only the example in git)
+backend/src/main/resources/application-*.properties
+!backend/src/main/resources/application-example.properties
+backend/src/main/resources/application-*.yml
+!backend/src/main/resources/application-example.yml
+
+# Firebase service accounts anywhere in the repo
+**/firebase-service-account*.json
+
+# General key/certificate material
+*.keystore
+*.jks
+*.p12
+*.pfx

@@ -1,4 +1,6 @@
-import { type FormEvent, useEffect, useState } from 'react'
+import { type FormEvent, useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import type { Status } from '../types/status'
 
 const LoginPage = () => {
@@ -7,6 +9,48 @@ const LoginPage = () => {
   const [rememberMe, setRememberMe] = useState(false)
   const [status, setStatus] = useState<Status>({ type: 'idle', message: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isFlipped, setIsFlipped] = useState(false)
+  const navigate = useNavigate()
+
+  const risingHearts = useMemo(
+    () =>
+      Array.from({ length: 20 }, (_, index) => ({
+        id: `rising-${index}`,
+        initialX: Math.random() * 100,
+        targetX: Math.random() * 100,
+        duration: 5 + Math.random() * 3,
+        delay: Math.random() * 2,
+      })),
+    []
+  )
+
+  const fallingHearts = useMemo(
+    () =>
+      Array.from({ length: 25 }, (_, index) => ({
+        id: `falling-${index}`,
+        left: Math.random() * 100,
+        opacity: 0.3 + Math.random() * 0.3,
+        duration: 8 + Math.random() * 3,
+        delay: Math.random() * 3,
+      })),
+    []
+  )
+
+  const confettiParticles = useMemo(() => {
+    const colors = ['#ee2b5b', '#f472b6', '#fbbf24', '#c084fc', '#fb923c']
+    const shapes = ['●', '■', '▲', '★', '♥']
+
+    return Array.from({ length: 30 }, (_, index) => ({
+      id: `confetti-${index}`,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      shape: shapes[Math.floor(Math.random() * shapes.length)],
+      xOffset: (Math.random() - 0.5) * 1000,
+      yOffset: Math.random() * 800 - 200,
+      duration: 2 + Math.random() * 1.5,
+      delay: Math.random() * 4,
+      rotate: Math.random() * 720,
+    }))
+  }, [])
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -36,6 +80,7 @@ const LoginPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ username, password }),
       })
 
@@ -53,6 +98,7 @@ const LoginPage = () => {
       }
 
       setStatus({ type: 'success', message: data?.message ?? 'Giriş başarılı!' })
+      navigate('/choose', { replace: true })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu.'
       setStatus({ type: 'error', message })
@@ -62,96 +108,264 @@ const LoginPage = () => {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-100 px-4 py-10">
-      <div className="mx-auto flex max-w-5xl flex-col overflow-hidden rounded-3xl bg-white/80 shadow-2xl backdrop-blur md:flex-row">
-        <div className="flex flex-1 flex-col justify-between bg-gradient-to-br from-pink-500 via-rose-500 to-purple-500 p-10 text-white">
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-white/70">QR doğrulandı</p>
-            <h1 className="mt-4 text-4xl font-semibold leading-tight">
-              Sürpriz doğum günü günlüğüne hoş geldin ❤️
-            </h1>
-            <p className="mt-6 max-w-sm text-white/80">
-              Timeline, quiz ve hayaller bölümünü görmek için giriş yap. Her köşede seni bekleyen küçük sürprizler var.
-            </p>
-          </div>
-          <div className="mt-10 space-y-2 text-sm text-white/70">
-            <p>✨ Timeline: Birlikte geçirdiğimiz en özel anlar</p>
-            <p>🧠 Quiz: Beni ne kadar iyi tanıyorsun?</p>
-            <p>🌈 Hayaller: Gelecek planlarımız</p>
-          </div>
-        </div>
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-rose-50 via-amber-50 to-lilac-100 px-4 py-10 font-display">
+      {/* Floating & Falling Hearts + Confetti Background */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {/* Rising Hearts - Faster */}
+        {risingHearts.map((heart) => (
+          <motion.div
+            key={heart.id}
+            className="absolute text-3xl opacity-25"
+            initial={{ y: '110%', x: `${heart.initialX}%` }}
+            animate={{
+              y: '-10%',
+              x: `${heart.targetX}%`,
+              rotate: [0, 360],
+            }}
+            transition={{
+              duration: heart.duration,
+              repeat: Infinity,
+              delay: heart.delay,
+              ease: 'linear',
+            }}
+          >
+            ❤️
+          </motion.div>
+        ))}
+        
+        {/* Falling Hearts - Softer Descent */}
+        {fallingHearts.map((heart) => (
+          <motion.div
+            key={heart.id}
+            className="absolute text-2xl"
+            style={{
+              left: `${heart.left}%`,
+              opacity: heart.opacity,
+            }}
+            initial={{ y: -50, rotate: 0 }}
+            animate={{
+              y: typeof window !== 'undefined' ? window.innerHeight + 50 : 1000,
+              rotate: 720,
+            }}
+            transition={{
+              duration: heart.duration,
+              repeat: Infinity,
+              delay: heart.delay,
+              ease: 'easeInOut',
+            }}
+          >
+            💖
+          </motion.div>
+        ))}
 
-        <div className="flex flex-1 flex-col justify-center px-8 py-12">
-          <div className="mx-auto w-full max-w-md">
-            <h2 className="text-3xl font-semibold text-slate-900">Giriş Yap</h2>
-            <p className="mt-2 text-sm text-slate-500">QR kartındaki kullanıcı adı ve parola ile giriş yapabilirsin.</p>
+        {/* Confetti Burst */}
+        {confettiParticles.map((particle) => (
+          <motion.div
+            key={particle.id}
+            className="absolute text-xl font-bold"
+            style={{
+              left: '50%',
+              top: '50%',
+              color: particle.color,
+              opacity: 0.6,
+            }}
+            initial={{ x: 0, y: 0, scale: 0, rotate: 0 }}
+            animate={{
+              x: particle.xOffset,
+              y: particle.yOffset,
+              scale: [0, 1.5, 1],
+              rotate: particle.rotate,
+              opacity: [0, 0.8, 0],
+            }}
+            transition={{
+              duration: particle.duration,
+              repeat: Infinity,
+              delay: particle.delay,
+              ease: 'easeOut',
+            }}
+          >
+            {particle.shape}
+          </motion.div>
+        ))}
+      </div>
 
-            <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
-              <div className="space-y-2">
-                <label htmlFor="username" className="text-sm font-medium text-slate-700">
+      <div className="relative z-10 w-full max-w-2xl" style={{ perspective: '1000px' }}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ 
+            opacity: 1, 
+            scale: 1,
+            rotateY: isFlipped ? 180 : 0,
+          }}
+          transition={{ duration: 0.8, ease: 'easeInOut' }}
+          style={{ transformStyle: 'preserve-3d' }}
+          className="relative min-h-[600px] w-full cursor-pointer rounded-[32px] shadow-[0_30px_80px_rgba(238,43,91,0.12)]"
+          onClick={() => !isFlipped && setIsFlipped(true)}
+        >
+          {/* Front Face - Welcome Card */}
+          <motion.div
+            style={{ 
+              backfaceVisibility: 'hidden',
+              transform: 'rotateY(0deg)',
+            }}
+            className="absolute inset-0 flex flex-col justify-between overflow-hidden rounded-[32px] border border-rose-100/70 bg-gradient-to-br from-rose-100 via-amber-50 to-white p-10 text-[#3b2a30] backdrop-blur-xl"
+          >
+            <div>
+              <motion.p
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-sm uppercase tracking-[0.3em] text-[#b36a7b]"
+              >
+                QR doğrulandı ✨
+              </motion.p>
+              <motion.h1
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="mt-4 text-4xl font-bold leading-tight text-[#2a1b1f]"
+              >
+                Sürpriz doğum günü günlüğüne hoş geldin ❤️
+              </motion.h1>
+              <motion.p
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="mt-6 text-[#6e4d55]"
+              >
+                Timeline, quiz ve hayaller bölümünü görmek için giriş yap. Her köşede seni bekleyen küçük sürprizler var.
+              </motion.p>
+            </div>
+            
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.8 }}
+              className="space-y-3 text-sm text-[#6e4d55]"
+            >
+              <motion.p whileHover={{ x: 5 }} className="flex items-center gap-2">
+                <span className="text-lg">✨</span> Timeline: Birlikte geçirdiğimiz en özel anlar
+              </motion.p>
+              <motion.p whileHover={{ x: 5 }} className="flex items-center gap-2">
+                <span className="text-lg">🧠</span> Quiz: Beni ne kadar iyi tanıyorsun?
+              </motion.p>
+              <motion.p whileHover={{ x: 5 }} className="flex items-center gap-2">
+                <span className="text-lg">🌈</span> Hayaller: Gelecek planlarımız
+              </motion.p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1 }}
+              className="mt-8 flex items-center justify-center gap-2 text-[#b36a7b]"
+            >
+              <span className="text-sm">Giriş yapmak için tıkla</span>
+            
+            </motion.div>
+          </motion.div>
+
+          {/* Back Face - Login Form */}
+          <motion.div
+            style={{ 
+              backfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)',
+            }}
+            className="absolute inset-0 flex flex-col justify-center overflow-hidden rounded-[32px] border border-rose-100/70 bg-white/40 p-10 backdrop-blur-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setIsFlipped(false)}
+              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-primary transition hover:bg-rose-200"
+            >
+              ✕
+            </button>
+
+            <div className="mx-auto w-full max-w-md">
+              <h2 className="text-3xl font-bold text-[#181113]">
+                Giriş Yap 💖
+              </h2>
+              <p className="mt-2 text-sm text-[#89616b]">
+                QR kartındaki kullanıcı adı ve parola ile giriş yapabilirsin.
+              </p>
+
+              <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+                <div className="space-y-2">
+                <label htmlFor="username" className="text-sm font-semibold text-[#6e4d55]">
                   Kullanıcı Adı
                 </label>
                 <input
                   id="username"
                   type="text"
-                  className="w-full rounded-2xl border border-slate-200 bg-white/60 px-4 py-3 text-slate-900 outline-none transition focus:border-pink-400 focus:ring focus:ring-pink-200"
-                  placeholder="ör. user_one"
+                  className="w-full rounded-2xl border border-rose-100 bg-white px-4 py-3 text-[#4A4A4A] outline-none transition placeholder:text-[#b3969d] focus:border-primary focus:ring-2 focus:ring-primary/20"
                   value={username}
                   onChange={(event) => setUsername(event.target.value)}
                   autoComplete="username"
                 />
-              </div>
+                </div>
 
-              <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-slate-700">
+                <div className="space-y-2">
+                <label htmlFor="password" className="text-sm font-semibold text-[#6e4d55]">
                   Parola
                 </label>
                 <input
                   id="password"
                   type="password"
-                  className="w-full rounded-2xl border border-slate-200 bg-white/60 px-4 py-3 text-slate-900 outline-none transition focus:border-pink-400 focus:ring focus:ring-pink-200"
-                  placeholder="********"
+                  className="w-full rounded-2xl border border-rose-100 bg-white px-4 py-3 text-[#4A4A4A] outline-none transition placeholder:text-[#b3969d] focus:border-primary focus:ring-2 focus:ring-primary/20"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   autoComplete="current-password"
                 />
-              </div>
+                </div>
 
-              <div className="flex items-center justify-between text-sm text-slate-600">
+                <div className="flex items-center justify-between text-sm text-[#89616b]">
                 <label className="inline-flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(event) => setRememberMe(event.target.checked)}
-                    className="h-4 w-4 rounded border-slate-300 text-pink-500 focus:ring-pink-400"
+                    className="h-4 w-4 rounded border-rose-200 bg-white text-primary focus:ring-primary"
                   />
                   Bilgilerimi hatırla
                 </label>
-                <span className="text-xs text-slate-400">QR kartındaki bilgileri kullan</span>
-              </div>
+                  <span className="text-xs text-[#b3969d]">QR kartındaki bilgileri kullan</span>
+                </div>
 
-              <button
+                <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-pink-500 to-purple-500 px-4 py-3 text-base font-semibold text-white shadow-lg transition hover:from-pink-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-pink-400 disabled:cursor-not-allowed disabled:opacity-70"
+                className="flex w-full items-center justify-center rounded-full bg-primary px-4 py-3.5 text-base font-bold text-white shadow-lg shadow-primary/30 transition focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {isSubmitting ? 'Giriş yapılıyor...' : 'Giriş Yap'}
-              </button>
-            </form>
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <motion.span
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    >
+                      ⭕
+                    </motion.span>
+                    Giriş yapılıyor...
+                  </span>
+                ) : (
+                  'Giriş Yap →'
+                )}
+                </button>
+              </form>
 
-            {status.type !== 'idle' && (
-              <p
-                className={`mt-6 rounded-2xl px-4 py-3 text-sm ${
-                  status.type === 'success'
-                    ? 'bg-emerald-50 text-emerald-700'
-                    : 'bg-rose-50 text-rose-600'
-                }`}
-              >
-                {status.message}
-              </p>
-            )}
-          </div>
-        </div>
+              {status.type !== 'idle' && (
+                <p
+                  className={`mt-6 rounded-2xl border px-4 py-3 text-sm font-medium ${
+                    status.type === 'success'
+                      ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                      : 'border-rose-200 bg-rose-50 text-rose-700'
+                  }`}
+                >
+                  {status.message}
+                </p>
+              )}
+            </div>
+          </motion.div>
+        </motion.div>
       </div>
     </main>
   )
