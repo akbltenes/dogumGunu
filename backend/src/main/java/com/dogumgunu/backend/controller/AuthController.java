@@ -37,6 +37,10 @@ public class AuthController {
         SecurityContext context = SecurityContextHolder.getContext();
         securityContextRepository.saveContext(context, request, response);
         
+        // Explicitly set session cookie for cross-origin
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Expose-Headers", "Set-Cookie");
+        
         return result;
     }
 
