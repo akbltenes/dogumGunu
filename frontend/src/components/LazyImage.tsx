@@ -30,9 +30,12 @@ const LazyImage = ({ src, alt, className = '', placeholderClassName = '' }: Lazy
     }
 
     return () => {
+      if (imgRef.current) {
+        observer.unobserve(imgRef.current)
+      }
       observer.disconnect()
     }
-  }, [])
+  }, [src])
 
   return (
     <div className="relative w-full h-full">
