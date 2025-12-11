@@ -34,8 +34,8 @@ const journeys: Journey[] = [
     path: '/quiz',
     ready: true,
     image:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Question_mark_%28black%29.svg/800px-Question_mark_%28black%29.svg.png',
-    imageAlt: 'Renkli ışıklandırılmış quiz sahnesi ve büyük soru işaretleri',
+      'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=1000&q=80&sat=-10',
+    imageAlt: 'Renkli kartlar ve kalemlerle masa',
     badge: 'Zihin Oyunu',
     highlights: ['Sorular', 'Puanlama', 'Sürprizler'],
   },
